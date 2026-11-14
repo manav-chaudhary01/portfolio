@@ -16,9 +16,9 @@ interface NavTileProps {
 }
 
 /**
- * Tactile navigation tile inspired by pixelwrld.co.
- * Features spring-based hover physics, subtle tilt, ambient shadow bloom,
- * and rounded light-grey pill label.
+ * Coherent semantic interactive control inspired by pixelwrld.co.
+ * Unifies the illustrated 3D tile and the rounded pill label into a single
+ * accessible button with tactile spring physics, dynamic tilt, and sibling dimming.
  */
 export const NavTile: React.FC<NavTileProps> = ({
   id,
@@ -34,19 +34,25 @@ export const NavTile: React.FC<NavTileProps> = ({
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <div className="flex flex-col items-center group relative select-none">
-      <motion.button
-        type="button"
-        id={`nav-tile-${id}`}
-        onClick={onClick}
-        aria-label={ariaLabel || label}
-        aria-haspopup="dialog"
-        aria-expanded={ariaExpanded}
-        initial={false}
+    <motion.button
+      type="button"
+      id={`nav-tile-${id}`}
+      onClick={onClick}
+      aria-label={ariaLabel || label}
+      aria-haspopup="dialog"
+      aria-expanded={ariaExpanded}
+      initial={false}
+      animate={{
+        opacity: isDimmed ? 0.2 : 1,
+        filter: isDimmed ? 'blur(6px)' : 'blur(0px)',
+        scale: isDimmed ? 0.94 : isFocused ? 1.05 : 1,
+      }}
+      transition={springTactile}
+      className="flex flex-col items-center group cursor-pointer select-none bg-transparent border-0 p-0 m-0 focus:outline-none focus-visible:outline-none"
+    >
+      {/* Tactile Illustrated Tile Container */}
+      <motion.div
         animate={{
-          opacity: isDimmed ? 0.2 : 1,
-          filter: isDimmed ? 'blur(6px)' : 'blur(0px)',
-          scale: isDimmed ? 0.94 : isFocused ? 1.05 : 1,
           rotate: prefersReducedMotion ? 0 : tilt,
         }}
         whileHover={
@@ -68,25 +74,17 @@ export const NavTile: React.FC<NavTileProps> = ({
                 transition: { duration: 0.08 },
               }
         }
-        transition={springTactile}
-        className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-2xl sm:rounded-3xl bg-surface/90 border border-border-card shadow-tactile hover:shadow-tactile-hover flex items-center justify-center cursor-pointer transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue"
+        className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-2xl sm:rounded-3xl bg-surface/90 border border-border-card shadow-tactile group-hover:shadow-tactile-hover group-focus-visible:ring-2 group-focus-visible:ring-accent-blue group-focus-visible:ring-offset-4 group-focus-visible:ring-offset-canvas flex items-center justify-center transition-all duration-200"
       >
         <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center pointer-events-none">
           {illustration}
         </div>
-      </motion.button>
+      </motion.div>
 
       {/* Small Rounded Light-Grey Pill Label */}
-      <motion.span
-        animate={{
-          opacity: isDimmed ? 0.2 : 1,
-        }}
-        transition={{ duration: 0.2 }}
-        className="mt-3 px-3 py-1 text-xs font-medium text-ink-secondary bg-surface-subtle border border-border-subtle rounded-pill shadow-xs group-hover:bg-surface-hover group-hover:text-ink-primary transition-colors cursor-pointer"
-        onClick={onClick}
-      >
+      <span className="mt-3 px-3 py-1 text-xs font-medium text-ink-secondary bg-surface-subtle border border-border-subtle rounded-pill shadow-xs group-hover:bg-surface-hover group-hover:text-ink-primary group-focus-visible:bg-surface-hover group-focus-visible:text-ink-primary transition-colors">
         {label}
-      </motion.span>
-    </div>
+      </span>
+    </motion.button>
   );
 };

@@ -1,24 +1,23 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ABOUT_DATA } from '../../data/about';
 import { X, Sparkles } from 'lucide-react';
 import { backdropVariants, previewCardVariants } from '../../animations/presets';
+import { useDialogFocus } from '../../hooks/useDialogFocus';
 
 interface AboutModalProps {
   isOpen: boolean;
   onClose: () => void;
+  triggerRef?: React.RefObject<HTMLElement | null>;
 }
 
-export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    if (isOpen) {
-      window.addEventListener('keydown', handleKeyDown);
-    }
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose, triggerRef }) => {
+  const { dialogRef, handleBackdropClick } = useDialogFocus<HTMLDivElement>({
+    isOpen,
+    onClose,
+    triggerRef,
+    closeOnOutsideClick: true,
+  });
 
   return (
     <AnimatePresence>
@@ -29,24 +28,26 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
           aria-labelledby="about-modal-title"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
         >
-          {/* Soft Blur Backdrop */}
+          {/* Soft Blur Backdrop with outside click */}
           <motion.div
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed inset-0 bg-ink-primary/20 backdrop-blur-md"
-            onClick={onClose}
+            className="fixed inset-0 bg-ink-primary/25 backdrop-blur-md cursor-pointer"
+            onClick={handleBackdropClick}
             aria-hidden="true"
           />
 
           {/* Modal Container */}
           <motion.div
+            ref={dialogRef}
+            tabIndex={-1}
             variants={previewCardVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="relative z-10 w-full max-w-xl max-h-[85vh] overflow-y-auto bg-surface border border-border-subtle rounded-modal p-6 sm:p-8 shadow-preview text-left flex flex-col"
+            className="relative z-10 w-full max-w-xl max-h-[85vh] overflow-y-auto bg-surface border border-border-subtle rounded-modal p-6 sm:p-8 shadow-preview text-left flex flex-col focus:outline-none"
           >
             {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
@@ -59,7 +60,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="text-ink-muted hover:text-ink-primary p-1.5 rounded-full hover:bg-surface-subtle transition-colors cursor-pointer"
+                className="text-ink-muted hover:text-ink-primary p-1.5 rounded-full hover:bg-surface-subtle transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue"
                 aria-label="Close about dialog"
               >
                 <X size={18} />

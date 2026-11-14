@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SOCIAL_LINKS } from '../../data/socialLinks';
 import { X, Mail, FileText, ArrowUpRight } from 'lucide-react';
 import { GithubIcon } from '../icons/GithubIcon';
 import { springModal, springTactile } from '../../animations/presets';
+import { useDialogFocus } from '../../hooks/useDialogFocus';
 
 interface SocialDockProps {
   isOpen: boolean;
@@ -15,15 +16,23 @@ interface SocialDockProps {
  * Expandable tactile social dock footer inspired by pixelwrld.co.
  * Initially shows a discrete 3-dot pill (...) that expands into an elevated
  * sheet dock with circular icon buttons.
+ *
+ * Implements:
+ * - Dynamic aria-expanded state
+ * - Reliable document-level outside-click dismissal
+ * - Escape-key dismissal
+ * - Focus trapping and restoration
  */
 export const SocialDock: React.FC<SocialDockProps> = ({ isOpen, onToggle, onClose }) => {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  const { dialogRef } = useDialogFocus<HTMLDivElement>({
+    isOpen,
+    onClose,
+    triggerRef,
+    closeOnOutsideClick: true,
+    lockScroll: false,
+  });
 
   const renderIcon = (iconType: string) => {
     switch (iconType) {
@@ -45,6 +54,7 @@ export const SocialDock: React.FC<SocialDockProps> = ({ isOpen, onToggle, onClos
           /* Collapsed 3-Dot Pill Button */
           <motion.button
             key="collapsed-pill"
+            ref={triggerRef}
             type="button"
             onClick={onToggle}
             initial={{ opacity: 0, scale: 0.9 }}
@@ -53,9 +63,10 @@ export const SocialDock: React.FC<SocialDockProps> = ({ isOpen, onToggle, onClos
             whileHover={{ y: -2, scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             transition={springTactile}
-            className="px-4 py-2 bg-surface border border-border-subtle rounded-pill shadow-xs hover:shadow-tactile transition-all duration-200 cursor-pointer text-ink-secondary hover:text-ink-primary flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue"
+            className="px-4 py-2 bg-surface border border-border-subtle rounded-pill shadow-xs hover:shadow-tactile transition-all duration-200 cursor-pointer text-ink-secondary hover:text-ink-primary flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2"
             aria-label="Open contact and social links"
-            aria-expanded="false"
+            aria-expanded={false}
+            aria-haspopup="dialog"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-ink-muted"></span>
             <span className="w-1.5 h-1.5 rounded-full bg-ink-muted"></span>
@@ -65,13 +76,15 @@ export const SocialDock: React.FC<SocialDockProps> = ({ isOpen, onToggle, onClos
           /* Expanded Social Dock Sheet (Pixelwrld Style) */
           <motion.div
             key="expanded-dock"
+            ref={dialogRef}
             role="dialog"
-            aria-label="Social and contact links dock"
+            aria-modal="true"
+            aria-label="Contact and social links"
             initial={{ opacity: 0, y: 20, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 15, scale: 0.95 }}
             transition={springModal}
-            className="w-full max-w-sm sm:max-w-md p-4 sm:p-5 bg-surface/95 backdrop-blur-md border border-border-subtle rounded-3xl shadow-dock flex flex-col items-center"
+            className="relative z-30 w-full max-w-sm sm:max-w-md p-4 sm:p-5 bg-surface/95 backdrop-blur-md border border-border-subtle rounded-3xl shadow-dock flex flex-col items-center"
           >
             {/* Top Close Bar */}
             <div className="flex items-center justify-between w-full mb-3 px-2">
@@ -81,7 +94,7 @@ export const SocialDock: React.FC<SocialDockProps> = ({ isOpen, onToggle, onClos
               <button
                 type="button"
                 onClick={onClose}
-                className="text-ink-muted hover:text-ink-primary p-1 rounded-full hover:bg-surface-subtle transition-colors cursor-pointer"
+                className="text-ink-muted hover:text-ink-primary p-1 rounded-full hover:bg-surface-subtle transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue"
                 aria-label="Close social dock"
               >
                 <X size={16} />
@@ -97,7 +110,7 @@ export const SocialDock: React.FC<SocialDockProps> = ({ isOpen, onToggle, onClos
                   target={link.isExternal ? '_blank' : undefined}
                   rel={link.isExternal ? 'noopener noreferrer' : undefined}
                   download={link.download}
-                  className="flex flex-col items-center gap-2 group p-2 rounded-2xl hover:bg-surface-subtle/80 transition-all duration-200"
+                  className="flex flex-col items-center gap-2 group p-2 rounded-2xl hover:bg-surface-subtle/80 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue"
                   aria-label={link.ariaLabel}
                 >
                   <div className="w-11 h-11 rounded-full bg-surface-subtle group-hover:bg-ink-primary group-hover:text-surface text-ink-primary flex items-center justify-center transition-all duration-200 shadow-xs group-hover:scale-105">

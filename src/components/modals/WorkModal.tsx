@@ -1,26 +1,30 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PROJECT_LIST } from '../../data/projects';
 import { ProjectSlug } from '../../types';
 import { X, Briefcase, ArrowUpRight } from 'lucide-react';
 import { backdropVariants, previewCardVariants } from '../../animations/presets';
+import { useDialogFocus } from '../../hooks/useDialogFocus';
 
 interface WorkModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectProject: (slug: ProjectSlug) => void;
+  triggerRef?: React.RefObject<HTMLElement | null>;
 }
 
-export const WorkModal: React.FC<WorkModalProps> = ({ isOpen, onClose, onSelectProject }) => {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    if (isOpen) {
-      window.addEventListener('keydown', handleKeyDown);
-    }
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+export const WorkModal: React.FC<WorkModalProps> = ({
+  isOpen,
+  onClose,
+  onSelectProject,
+  triggerRef,
+}) => {
+  const { dialogRef, handleBackdropClick } = useDialogFocus<HTMLDivElement>({
+    isOpen,
+    onClose,
+    triggerRef,
+    closeOnOutsideClick: true,
+  });
 
   return (
     <AnimatePresence>
@@ -31,24 +35,26 @@ export const WorkModal: React.FC<WorkModalProps> = ({ isOpen, onClose, onSelectP
           aria-labelledby="work-modal-title"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
         >
-          {/* Soft Blur Backdrop */}
+          {/* Soft Blur Backdrop with outside click */}
           <motion.div
             variants={backdropVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed inset-0 bg-ink-primary/20 backdrop-blur-md"
-            onClick={onClose}
+            className="fixed inset-0 bg-ink-primary/25 backdrop-blur-md cursor-pointer"
+            onClick={handleBackdropClick}
             aria-hidden="true"
           />
 
           {/* Modal Container */}
           <motion.div
+            ref={dialogRef}
+            tabIndex={-1}
             variants={previewCardVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="relative z-10 w-full max-w-xl max-h-[85vh] overflow-y-auto bg-surface border border-border-subtle rounded-modal p-6 sm:p-8 shadow-preview text-left flex flex-col"
+            className="relative z-10 w-full max-w-xl max-h-[85vh] overflow-y-auto bg-surface border border-border-subtle rounded-modal p-6 sm:p-8 shadow-preview text-left flex flex-col focus:outline-none"
           >
             {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
@@ -61,7 +67,7 @@ export const WorkModal: React.FC<WorkModalProps> = ({ isOpen, onClose, onSelectP
               <button
                 type="button"
                 onClick={onClose}
-                className="text-ink-muted hover:text-ink-primary p-1.5 rounded-full hover:bg-surface-subtle transition-colors cursor-pointer"
+                className="text-ink-muted hover:text-ink-primary p-1.5 rounded-full hover:bg-surface-subtle transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue"
                 aria-label="Close work dialog"
               >
                 <X size={18} />
@@ -88,7 +94,7 @@ export const WorkModal: React.FC<WorkModalProps> = ({ isOpen, onClose, onSelectP
                     onClose();
                     onSelectProject(project.slug);
                   }}
-                  className="w-full p-4 rounded-2xl bg-surface-subtle/80 hover:bg-surface-subtle border border-border-subtle hover:border-ink-muted/30 transition-all duration-200 flex items-start justify-between text-left group cursor-pointer shadow-2xs hover:shadow-tactile hover:-translate-y-0.5"
+                  className="w-full p-4 rounded-2xl bg-surface-subtle/80 hover:bg-surface-subtle border border-border-subtle hover:border-ink-muted/30 transition-all duration-200 flex items-start justify-between text-left group cursor-pointer shadow-2xs hover:shadow-tactile hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue"
                 >
                   <div className="flex items-start gap-3.5">
                     <span
