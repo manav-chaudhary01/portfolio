@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-canvas: #faf8f5;
+  --color-canvas-dot: rgba(0, 0, 0, 0.08);
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f2efe9;
+  --color-surface-hover: #e8e5df;
+  --color-ink-primary: #1a1917;
+  --color-ink-secondary: #63615a;
+  --color-ink-muted: #96938b;
+  --color-border-subtle: rgba(0, 0, 0, 0.08);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-canvas);
+    color: var(--color-ink-primary);
+  }
+
+  body {
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Accessible focus indicators */
+  :focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 4px;
+    border-radius: 6px;
+  }
+}
+
+/* Tactile Dotted Grid Canvas Background */
+.canvas-dot-grid {
+  background-color: var(--color-canvas);
+  background-image: radial-gradient(var(--color-canvas-dot) 1.25px, transparent 1.25px);
+  background-size: 24px 24px;
+  background-position: 0 0;
+}
+
+/* Subtle editorial paper texture overlay */
+.paper-texture {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.35;
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
