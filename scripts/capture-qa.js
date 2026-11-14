@@ -11,7 +11,7 @@ if (!fs.existsSync(outputDir)) {
 }
 
 async function run() {
-  console.log('Launching browser for visual QA captures...');
+  console.log('Launching browser for Phase 4 visual captures...');
   const browser = await chromium.launch({
     headless: true,
     executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
@@ -23,93 +23,41 @@ async function run() {
   // DESKTOP CAPTURES (1440 x 900)
   // ==========================================
   console.log('--- Desktop (1440 x 900) ---');
-  const context = await browser.newContext({
+  const desktopContext = await browser.newContext({
     viewport: { width: 1440, height: 900 },
     deviceScaleFactor: 2,
   });
 
-  const page = await context.newPage();
-  page.on('console', (msg) => {
-    if (msg.type() === 'error') {
-      consoleErrors.push(msg.text());
-    }
+  const desktopPage = await desktopContext.newPage();
+  desktopPage.on('console', (msg) => {
+    if (msg.type() === 'error') consoleErrors.push(msg.text());
   });
 
-  // 1. Initial Homepage
-  await page.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
-  await page.waitForTimeout(600);
-  await page.screenshot({ path: path.join(outputDir, '01-desktop-initial-homepage.png') });
-  console.log('Captured 01-desktop-initial-homepage.png');
+  // 1. Meter Flow Preview (Desktop)
+  await desktopPage.goto('http://localhost:5173/?project=meter-flow', { waitUntil: 'networkidle' });
+  await desktopPage.waitForTimeout(600);
+  await desktopPage.screenshot({ path: path.join(outputDir, 'phase4-desktop-meter-flow.png') });
+  console.log('Captured phase4-desktop-meter-flow.png');
 
-  // 2a. Hover Work
-  await page.hover('#nav-tile-work');
-  await page.waitForTimeout(400);
-  await page.screenshot({ path: path.join(outputDir, '02a-desktop-hover-work.png') });
-  console.log('Captured 02a-desktop-hover-work.png');
+  // 2. Attendance Tracker Preview (Desktop)
+  await desktopPage.goto('http://localhost:5173/?project=attendance-tracker', { waitUntil: 'networkidle' });
+  await desktopPage.waitForTimeout(600);
+  await desktopPage.screenshot({ path: path.join(outputDir, 'phase4-desktop-attendance-tracker.png') });
+  console.log('Captured phase4-desktop-attendance-tracker.png');
 
-  // 2b. Hover About
-  await page.hover('#nav-tile-about');
-  await page.waitForTimeout(400);
-  await page.screenshot({ path: path.join(outputDir, '02b-desktop-hover-about.png') });
-  console.log('Captured 02b-desktop-hover-about.png');
+  // 3. LeetCode Desktop Widget Preview (Desktop)
+  await desktopPage.goto('http://localhost:5173/?project=leetcode-widget', { waitUntil: 'networkidle' });
+  await desktopPage.waitForTimeout(600);
+  await desktopPage.screenshot({ path: path.join(outputDir, 'phase4-desktop-leetcode-widget.png') });
+  console.log('Captured phase4-desktop-leetcode-widget.png');
 
-  // 2c. Hover Playground
-  await page.hover('#nav-tile-playground');
-  await page.waitForTimeout(400);
-  await page.screenshot({ path: path.join(outputDir, '02c-desktop-hover-playground.png') });
-  console.log('Captured 02c-desktop-hover-playground.png');
-
-  // 2d. Hover Contact
-  await page.hover('#nav-tile-contact');
-  await page.waitForTimeout(400);
-  await page.screenshot({ path: path.join(outputDir, '02d-desktop-hover-contact.png') });
-  console.log('Captured 02d-desktop-hover-contact.png');
-
-  // Move mouse away to reset hover state
-  await page.mouse.move(10, 10);
-  await page.waitForTimeout(300);
-
-  // 3. Work Selection Modal
-  await page.click('#nav-tile-work');
-  await page.waitForTimeout(500);
-  await page.screenshot({ path: path.join(outputDir, '03-desktop-work-modal.png') });
-  console.log('Captured 03-desktop-work-modal.png');
-
-  // Close work modal via escape
-  await page.keyboard.press('Escape');
-  await page.waitForTimeout(400);
-
-  // 4. Individual Project Preview (via query param ?project=meter-flow)
-  await page.goto('http://localhost:5173/?project=meter-flow', { waitUntil: 'networkidle' });
-  await page.waitForTimeout(600);
-  await page.screenshot({ path: path.join(outputDir, '04-desktop-project-preview.png') });
-  console.log('Captured 04-desktop-project-preview.png');
-
-  // Close preview via clicking outside (backdrop)
-  await page.mouse.click(100, 100);
-  await page.waitForTimeout(400);
-
-  // 5. About Modal
-  await page.click('#nav-tile-about');
-  await page.waitForTimeout(500);
-  await page.screenshot({ path: path.join(outputDir, '05-desktop-about-modal.png') });
-  console.log('Captured 05-desktop-about-modal.png');
-  await page.keyboard.press('Escape');
-  await page.waitForTimeout(400);
-
-  // 6. Playground Modal
-  await page.click('#nav-tile-playground');
-  await page.waitForTimeout(500);
-  await page.screenshot({ path: path.join(outputDir, '06-desktop-playground-modal.png') });
-  console.log('Captured 06-desktop-playground-modal.png');
-  await page.keyboard.press('Escape');
-  await page.waitForTimeout(400);
-
-  // 7. Expanded Social Dock
-  await page.click('button[aria-label="Open contact and social links"]');
-  await page.waitForTimeout(500);
-  await page.screenshot({ path: path.join(outputDir, '07-desktop-expanded-social-dock.png') });
-  console.log('Captured 07-desktop-expanded-social-dock.png');
+  // 4. Capture transition state (opening animation)
+  await desktopPage.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
+  await desktopPage.waitForTimeout(300);
+  await desktopPage.click('#nav-tile-work');
+  await desktopPage.waitForTimeout(200);
+  await desktopPage.screenshot({ path: path.join(outputDir, 'phase4-desktop-preview-transition.png') });
+  console.log('Captured phase4-desktop-preview-transition.png');
 
   // ==========================================
   // MOBILE CAPTURES (390 x 844)
@@ -123,33 +71,34 @@ async function run() {
   });
 
   const mobilePage = await mobileContext.newPage();
+  mobilePage.on('console', (msg) => {
+    if (msg.type() === 'error') consoleErrors.push(msg.text());
+  });
 
-  // 8. Mobile Initial Homepage
-  await mobilePage.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
-  await mobilePage.waitForTimeout(600);
-  await mobilePage.screenshot({ path: path.join(outputDir, '08-mobile-initial-homepage.png') });
-  console.log('Captured 08-mobile-initial-homepage.png');
-
-  // 9. Mobile Project Preview
+  // 5. Meter Flow Preview (Mobile)
   await mobilePage.goto('http://localhost:5173/?project=meter-flow', { waitUntil: 'networkidle' });
   await mobilePage.waitForTimeout(600);
-  await mobilePage.screenshot({ path: path.join(outputDir, '09-mobile-project-preview.png') });
-  console.log('Captured 09-mobile-project-preview.png');
+  await mobilePage.screenshot({ path: path.join(outputDir, 'phase4-mobile-meter-flow.png') });
+  console.log('Captured phase4-mobile-meter-flow.png');
 
-  // 10. Mobile Expanded Social Dock
-  await mobilePage.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
-  await mobilePage.waitForTimeout(400);
-  await mobilePage.click('button[aria-label="Open contact and social links"]');
-  await mobilePage.waitForTimeout(500);
-  await mobilePage.screenshot({ path: path.join(outputDir, '10-mobile-expanded-social-dock.png') });
-  console.log('Captured 10-mobile-expanded-social-dock.png');
+  // 6. Attendance Tracker Preview (Mobile)
+  await mobilePage.goto('http://localhost:5173/?project=attendance-tracker', { waitUntil: 'networkidle' });
+  await mobilePage.waitForTimeout(600);
+  await mobilePage.screenshot({ path: path.join(outputDir, 'phase4-mobile-attendance-tracker.png') });
+  console.log('Captured phase4-mobile-attendance-tracker.png');
+
+  // 7. LeetCode Desktop Widget Preview (Mobile)
+  await mobilePage.goto('http://localhost:5173/?project=leetcode-widget', { waitUntil: 'networkidle' });
+  await mobilePage.waitForTimeout(600);
+  await mobilePage.screenshot({ path: path.join(outputDir, 'phase4-mobile-leetcode-widget.png') });
+  console.log('Captured phase4-mobile-leetcode-widget.png');
 
   await browser.close();
 
-  console.log('\n--- QA Verification Results ---');
-  console.log(`Console errors during session: ${consoleErrors.length}`);
+  console.log(`\nPhase 4 captures complete! Total console errors: ${consoleErrors.length}`);
   if (consoleErrors.length > 0) {
     console.error(consoleErrors);
+    process.exit(1);
   }
 }
 
