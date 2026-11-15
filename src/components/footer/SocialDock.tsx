@@ -124,15 +124,24 @@ export const SocialDock: React.FC<SocialDockProps> = ({ isOpen, onToggle, onClos
               ))}
             </div>
 
-            {/* Dedicated Contact Page shortcut */}
-            <div className="w-full pt-2 pb-1 flex justify-center border-t border-border-subtle/60">
+            {/* Dedicated Activity & Contact Shortcuts */}
+            <div className="w-full pt-2 pb-1 flex items-center justify-around text-xs font-medium text-ink-secondary border-t border-border-subtle/60">
+              <Link
+                to="/activity"
+                onClick={onClose}
+                className="inline-flex items-center gap-1 hover:text-ink-primary transition-colors hover:underline"
+              >
+                <span>Live Activity</span>
+                <ArrowUpRight size={12} />
+              </Link>
+              <span className="text-border-subtle">•</span>
               <Link
                 to="/contact"
                 onClick={onClose}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-secondary hover:text-ink-primary transition-colors hover:underline"
+                className="inline-flex items-center gap-1 hover:text-ink-primary transition-colors hover:underline"
               >
-                <span>Open Dedicated Contact Page</span>
-                <ArrowUpRight size={13} />
+                <span>Contact Page</span>
+                <ArrowUpRight size={12} />
               </Link>
             </div>
 

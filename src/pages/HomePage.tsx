@@ -7,6 +7,7 @@ import { WorkModal } from '../components/modals/WorkModal';
 import { AboutModal } from '../components/modals/AboutModal';
 import { PlaygroundModal } from '../components/modals/PlaygroundModal';
 import { ProjectPreviewModal } from '../components/previews/ProjectPreviewModal';
+import { ElsewhereSection } from '../components/activity/ElsewhereSection';
 import { useProjectQuerySync } from '../hooks/useProjectQuerySync';
 import { ABOUT_DATA } from '../data/about';
 import { NavNodeId, ProjectSlug } from '../types';
@@ -82,6 +83,19 @@ export const HomePage: React.FC = () => {
           <p className="text-sm sm:text-base text-ink-secondary leading-relaxed font-sans font-normal text-center">
             {ABOUT_DATA.shortBio}
           </p>
+        </motion.section>
+
+        {/* Live Activity & Elsewhere Section */}
+        <motion.section
+          aria-label="Live developer activity"
+          animate={{
+            opacity: anyFocusActive ? 0.25 : 1,
+            filter: anyFocusActive ? 'blur(4px)' : 'blur(0px)',
+          }}
+          transition={{ duration: 0.25 }}
+          className="w-full mt-12 sm:mt-16"
+        >
+          <ElsewhereSection />
         </motion.section>
       </main>
 

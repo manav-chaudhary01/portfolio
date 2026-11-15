@@ -6,6 +6,7 @@ import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { AboutPage } from './pages/AboutPage';
 import { PlaygroundPage } from './pages/PlaygroundPage';
 import { ContactPage } from './pages/ContactPage';
+import { ActivityPage } from './pages/ActivityPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 export const App: React.FC = () => {
@@ -17,6 +18,7 @@ export const App: React.FC = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/playground" element={<PlaygroundPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/activity" element={<ActivityPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Shell>

@@ -153,3 +153,5 @@ export interface PersonalDetailItem {
   value: string;
   note?: string;
 }
+
+export * from './activity';
