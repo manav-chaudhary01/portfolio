@@ -20,6 +20,68 @@ export interface ProjectLink {
   type: 'github' | 'live' | 'case-study';
 }
 
+export interface EngineeringDecision {
+  title: string;
+  decision: string;
+  reason: string;
+  implementation: string;
+  tradeoff: string;
+}
+
+export interface FeatureShowcaseItem {
+  title: string;
+  subtitle: string;
+  description: string;
+  badge?: string;
+  codeSnippet?: {
+    filename: string;
+    language: string;
+    code: string;
+    caption?: string;
+  };
+  keyTakeaways: string[];
+}
+
+export interface ArchitectureDataFlowStep {
+  step: string;
+  title: string;
+  component: string;
+  detail: string;
+}
+
+export interface TestingReport {
+  framework: string;
+  testCount?: number;
+  suiteCount?: number;
+  description: string;
+  verifiedTraits: string[];
+}
+
+export interface CaseStudyData {
+  problem: {
+    overview: string;
+    painPoints: string[];
+    technicalChallenge: string;
+  };
+  approach: {
+    summary: string;
+    coreTenets: string[];
+  };
+  architectureFlow: {
+    title: string;
+    subtitle: string;
+    steps: ArchitectureDataFlowStep[];
+  };
+  engineeringDecisions: EngineeringDecision[];
+  featureShowcases: FeatureShowcaseItem[];
+  testing: TestingReport;
+  reflection: {
+    learnings: string[];
+    tradeoffs: string[];
+    futureRoadmap: string[];
+  };
+}
+
 export interface Project {
   id: string;
   slug: ProjectSlug;
@@ -38,6 +100,7 @@ export interface Project {
   architecture: ProjectArchitectureLayer[];
   links: ProjectLink[];
   callouts?: ProjectCallout[];
+  caseStudy?: CaseStudyData;
 }
 
 export interface NavNodeItem {

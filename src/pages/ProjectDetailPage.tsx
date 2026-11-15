@@ -2,181 +2,158 @@ import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { PROJECTS } from '../data/projects';
 import { ProjectSlug } from '../types';
-import { ArrowLeft, ExternalLink, CheckCircle2 } from 'lucide-react';
-import { GithubIcon } from '../components/icons/GithubIcon';
+import { ArrowLeft } from 'lucide-react';
+import { CaseStudyHero } from '../components/editorial/CaseStudyHero';
+import { CaseStudySection } from '../components/editorial/CaseStudySection';
+import { ArchitectureFlow } from '../components/editorial/ArchitectureFlow';
+import { EngineeringDecisions } from '../components/editorial/EngineeringDecisions';
+import { FeatureShowcase } from '../components/editorial/FeatureShowcase';
+import { TestingCard } from '../components/editorial/TestingCard';
+import { ReflectionSection } from '../components/editorial/ReflectionSection';
+import { ProjectNavigation } from '../components/editorial/ProjectNavigation';
 
 /**
- * Portal-inspired editorial project deep-dive page (/work/:slug).
- * Renders large editorial typography, generous whitespace, verified architecture matrix,
- * circular category feature badges, and handwritten callouts.
+ * Dedicated editorial project case study page (/work/:slug).
+ * Inspired by Portal's product storytelling and editorial clarity,
+ * grounded strictly in audited project codebases.
  */
 export const ProjectDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  // Scroll to top on mount
+  // Scroll to top whenever the active project slug changes
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [slug]);
 
   const project = slug && slug in PROJECTS ? PROJECTS[slug as ProjectSlug] : null;
 
-  if (!project) {
+  if (!project || !project.caseStudy) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center py-20 text-center">
-        <h1 className="font-editorial text-4xl text-ink-primary mb-4">Project Not Found</h1>
-        <p className="text-ink-secondary mb-8">The requested project could not be located.</p>
+      <main className="flex-1 flex flex-col items-center justify-center py-24 text-center">
+        <h1 className="font-editorial text-4xl sm:text-5xl text-ink-primary mb-4">
+          Case Study Not Found
+        </h1>
+        <p className="text-sm sm:text-base text-ink-secondary mb-8 font-sans max-w-md">
+          The requested project case study could not be located or has not yet been published.
+        </p>
         <Link
           to="/"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-pill bg-ink-primary text-surface text-sm font-medium hover:bg-ink-primary/90 transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-pill bg-ink-primary text-surface text-sm font-medium hover:bg-ink-primary/90 transition-colors shadow-xs"
         >
           <ArrowLeft size={16} />
           <span>Return to Homepage</span>
         </Link>
-      </div>
+      </main>
     );
   }
 
+  const { caseStudy } = project;
+
   return (
-    <article className="flex-1 flex flex-col w-full max-w-3xl mx-auto py-8 sm:py-12 animate-in fade-in duration-300">
-      {/* Back Navigation */}
-      <div className="mb-8">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-ink-muted hover:text-ink-primary transition-colors group"
-        >
-          <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-          <span>Back to corner</span>
-        </Link>
-      </div>
+    <main className="flex-1 flex flex-col w-full max-w-4xl mx-auto py-6 sm:py-10 animate-in fade-in duration-300">
+      {/* 1. Hero Section */}
+      <CaseStudyHero project={project} />
 
-      {/* Editorial Header (Portal Style) */}
-      <header className="mb-10 pb-8 border-b border-border-subtle">
-        <div className="flex items-center gap-3 mb-4">
-          <span
-            className="w-3.5 h-3.5 rounded-full"
-            style={{ backgroundColor: project.accentColor }}
-            aria-hidden="true"
-          />
-          <span className="text-xs font-semibold uppercase tracking-widest text-ink-muted">
-            {project.category} • {project.year}
-          </span>
-        </div>
-
-        <h1 className="font-editorial text-4xl sm:text-5xl md:text-6xl text-ink-primary tracking-tight leading-none mb-6">
-          {project.title}
-        </h1>
-
-        <p className="text-lg sm:text-xl text-ink-secondary font-sans leading-relaxed">
-          {project.subtitle}
+      {/* 2. Problem Definition */}
+      <CaseStudySection
+        id="problem"
+        tag="01 / The Problem"
+        title="Context & Core Engineering Challenge"
+        note="The Reality"
+      >
+        <p className="text-base sm:text-lg text-ink-secondary leading-relaxed font-sans mb-8">
+          {caseStudy.problem.overview}
         </p>
 
-        {/* Project Meta Bar */}
-        <div className="mt-8 pt-6 border-t border-border-subtle/60 grid grid-cols-2 sm:grid-cols-4 gap-4 text-left">
-          <div>
-            <span className="block text-[11px] uppercase font-semibold text-ink-muted tracking-wider">Role</span>
-            <span className="text-sm font-medium text-ink-primary mt-1 block">{project.role}</span>
-          </div>
-          <div>
-            <span className="block text-[11px] uppercase font-semibold text-ink-muted tracking-wider">Timeline</span>
-            <span className="text-sm font-medium text-ink-primary mt-1 block">{project.year}</span>
-          </div>
-          <div>
-            <span className="block text-[11px] uppercase font-semibold text-ink-muted tracking-wider">Focus</span>
-            <span className="text-sm font-medium text-ink-primary mt-1 block">{project.badgeText}</span>
-          </div>
-          <div>
-            <span className="block text-[11px] uppercase font-semibold text-ink-muted tracking-wider">Repository</span>
-            <div className="mt-1">
-              {project.links.map((link) => (
-                <a
-                  key={link.url}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm font-medium text-accent-blue hover:underline"
-                >
-                  <span>GitHub</span>
-                  <ExternalLink size={12} />
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Editorial Narrative */}
-      <section className="mb-12">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-ink-muted mb-4">
-          Overview & System Design
-        </h2>
-        <p className="text-base sm:text-lg text-ink-secondary leading-relaxed font-sans mb-6">
-          {project.description}
-        </p>
-
-        {/* Handwritten Callout Note (Portal Style) */}
-        {project.callouts && project.callouts.length > 0 && (
-          <div className="my-8 p-5 bg-surface-subtle/80 rounded-2xl border border-border-subtle relative">
-            <div className="flex items-start gap-3">
-              <span className="font-handwriting text-2xl text-accent-blue leading-none select-none">
-                ✎ Note:
-              </span>
-              <div>
-                <span className="font-sans font-medium text-ink-primary text-sm block">
-                  {project.callouts[0].title}
-                </span>
-                <span className="font-handwriting text-lg text-ink-secondary leading-snug block mt-0.5">
-                  {project.callouts[0].note}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* Verified Key Highlights with Circular Badges */}
-      <section className="mb-12">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-ink-muted mb-6">
-          Key Capabilities & Implementation Details
-        </h2>
-        <div className="grid grid-cols-1 gap-4">
-          {project.highlights.map((highlight, index) => (
+        {/* Friction Points Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          {caseStudy.problem.painPoints.map((point, index) => (
             <div
               key={index}
-              className="flex items-start gap-4 p-4 rounded-2xl bg-surface border border-border-subtle shadow-xs"
+              className="p-5 rounded-2xl bg-surface border border-border-card shadow-xs flex flex-col justify-between"
+            >
+              <div className="flex items-start gap-3">
+                <span
+                  className="w-2 h-2 rounded-full shrink-0 mt-2"
+                  style={{ backgroundColor: project.accentColor }}
+                  aria-hidden="true"
+                />
+                <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed font-sans">
+                  {point}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Technical Challenge Callout */}
+        <div className="p-5 sm:p-6 rounded-2xl bg-surface-subtle/80 border border-border-subtle relative">
+          <span className="block text-[11px] font-mono font-semibold uppercase tracking-wider text-ink-muted mb-2">
+            Primary Engineering Objective
+          </span>
+          <p className="text-sm sm:text-base font-medium text-ink-primary font-sans leading-relaxed">
+            {caseStudy.problem.technicalChallenge}
+          </p>
+        </div>
+      </CaseStudySection>
+
+      {/* 3. Architectural Approach */}
+      <CaseStudySection
+        id="approach"
+        tag="02 / Architectural Approach"
+        title="High-Level Strategy & Design Tenets"
+        note="Principles"
+      >
+        <p className="text-base sm:text-lg text-ink-secondary leading-relaxed font-sans mb-8">
+          {caseStudy.approach.summary}
+        </p>
+
+        {/* Core Tenets Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+          {caseStudy.approach.coreTenets.map((tenet, index) => (
+            <div
+              key={index}
+              className="p-5 rounded-2xl bg-surface border border-border-card shadow-xs flex items-start gap-3.5"
             >
               <div
-                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-surface font-semibold text-xs"
+                className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 font-mono text-[10px] font-bold text-surface shadow-2xs mt-0.5"
                 style={{ backgroundColor: project.accentColor }}
               >
-                <CheckCircle2 size={16} />
+                {index + 1}
               </div>
-              <p className="text-sm sm:text-base text-ink-secondary leading-relaxed">
-                {highlight}
+              <p className="text-xs sm:text-sm font-medium text-ink-primary font-sans leading-snug">
+                {tenet}
               </p>
             </div>
           ))}
         </div>
-      </section>
 
-      {/* Verified Architecture Breakdown Matrix */}
-      <section className="mb-12">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-ink-muted mb-6">
-          Technical Architecture Breakdown
-        </h2>
-        <div className="overflow-hidden rounded-2xl border border-border-subtle bg-surface shadow-xs">
+        {/* Verified Layer Matrix */}
+        <div className="rounded-3xl border border-border-card bg-surface overflow-hidden shadow-xs">
+          <div className="px-6 py-4 bg-surface-subtle/50 border-b border-border-subtle flex items-center justify-between">
+            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-ink-muted">
+              System Layer Decomposition
+            </span>
+            <span className="text-xs font-mono text-ink-muted">
+              {project.architecture.length} Verified Modules
+            </span>
+          </div>
           <div className="divide-y divide-border-subtle">
             {project.architecture.map((layer, index) => (
-              <div key={index} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6">
+              <div
+                key={index}
+                className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-6 hover:bg-surface-subtle/30 transition-colors"
+              >
                 <div className="w-full sm:w-1/3 shrink-0">
-                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wider block">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-ink-muted block">
                     {layer.layer}
                   </span>
-                  <span className="text-sm font-semibold text-ink-primary mt-1 block">
+                  <span className="text-sm font-semibold text-ink-primary font-sans mt-0.5 block">
                     {layer.technology}
                   </span>
                 </div>
                 <div className="w-full sm:w-2/3">
-                  <p className="text-sm text-ink-secondary leading-relaxed">
+                  <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed font-sans">
                     {layer.description}
                   </p>
                 </div>
@@ -184,32 +161,83 @@ export const ProjectDetailPage: React.FC = () => {
             ))}
           </div>
         </div>
-      </section>
+      </CaseStudySection>
 
-      {/* Footer Navigation */}
-      <footer className="mt-8 pt-8 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-ink-secondary hover:text-ink-primary transition-colors"
-        >
-          <ArrowLeft size={16} />
-          <span>Return to Homepage</span>
-        </Link>
+      {/* 4. Data Flow & Pipeline */}
+      <CaseStudySection
+        id="data-flow"
+        tag="03 / System Data Flow"
+        title="Runtime Execution & Boundary Traversal"
+        note="Under the hood"
+      >
+        <ArchitectureFlow
+          title={caseStudy.architectureFlow.title}
+          subtitle={caseStudy.architectureFlow.subtitle}
+          steps={caseStudy.architectureFlow.steps}
+          accentColor={project.accentColor}
+        />
+      </CaseStudySection>
 
-        {project.links.map((link) => (
-          <a
-            key={link.url}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-pill bg-ink-primary text-surface text-sm font-medium hover:bg-ink-primary/90 transition-colors shadow-xs"
-          >
-            <GithubIcon size={16} />
-            <span>{link.label}</span>
-            <ExternalLink size={14} />
-          </a>
-        ))}
-      </footer>
-    </article>
+      {/* 5. Key Engineering Decisions */}
+      <CaseStudySection
+        id="decisions"
+        tag="04 / Engineering Decisions"
+        title="Deliberate Architectural Choices & Trade-offs"
+        note="Engineering judgment"
+      >
+        <p className="text-sm sm:text-base text-ink-secondary leading-relaxed font-sans mb-8">
+          Real-world software engineering is a series of trade-offs. Rather than defaulting to generic conventions, each critical architectural choice was made with deliberate reasoning and measured trade-offs:
+        </p>
+
+        <EngineeringDecisions
+          decisions={caseStudy.engineeringDecisions}
+          accentColor={project.accentColor}
+        />
+      </CaseStudySection>
+
+      {/* 6. Feature & Implementation Showcase */}
+      <CaseStudySection
+        id="features"
+        tag="05 / Implementation Deep Dive"
+        title="Flagship Capabilities & Verified Code Excerpts"
+        note="Code in action"
+      >
+        <FeatureShowcase
+          features={caseStudy.featureShowcases}
+          accentColor={project.accentColor}
+        />
+      </CaseStudySection>
+
+      {/* 7. Testing & Reliability */}
+      <CaseStudySection
+        id="testing"
+        tag="06 / Verification & Testing"
+        title="Empirical Reliability & Test Coverage"
+        note="Verified safe"
+      >
+        <TestingCard
+          testing={caseStudy.testing}
+          accentColor={project.accentColor}
+        />
+      </CaseStudySection>
+
+      {/* 8. Reflection & Retrospective */}
+      <CaseStudySection
+        id="reflection"
+        tag="07 / Engineering Retrospective"
+        title="Reflections, Lessons & Future Roadmap"
+        note="Retrospective"
+      >
+        <ReflectionSection
+          learnings={caseStudy.reflection.learnings}
+          tradeoffs={caseStudy.reflection.tradeoffs}
+          futureRoadmap={caseStudy.reflection.futureRoadmap}
+          accentColor={project.accentColor}
+        />
+      </CaseStudySection>
+
+      {/* 9. Project Links & Pagination Navigation */}
+      <ProjectNavigation currentSlug={project.slug} />
+    </main>
   );
 };
