@@ -9,6 +9,29 @@ function activityDevServerPlugin(): Plugin {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         if (req.url && req.url.startsWith('/api/activity')) {
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+          res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+          if (req.method === 'OPTIONS') {
+            res.statusCode = 204;
+            res.end();
+            return;
+          }
+
+          if (req.method !== 'GET') {
+            res.statusCode = 405;
+            res.setHeader('Allow', 'GET, OPTIONS');
+            res.setHeader('Content-Type', 'application/json');
+            res.end(
+              JSON.stringify({
+                error: 'Method Not Allowed',
+                message: `HTTP method ${req.method || 'UNKNOWN'} is not supported for this endpoint.`,
+              })
+            );
+            return;
+          }
+
           try {
             const payload = await getActivityPayload(process.env);
             res.setHeader('Content-Type', 'application/json');

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc -b --noEmit",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/generate-seo.js && tsc -b && vite build",
     "preview": "vite preview",
     "test": "tsx --test scripts/test-activity-unit.js",
     "test:qa": "tsx scripts/test-phase8-qa.js"

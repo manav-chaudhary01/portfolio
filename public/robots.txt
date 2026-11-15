@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: /sitemap.xml
+# Sitemap location
+# Configured via SITE_URL deployment environment variable (e.g. SITE_URL=https://example.com)
+# NOTICE: SITE_URL was not set during build. Set SITE_URL in hosting variables for production.
+Sitemap: https://YOUR_PRODUCTION_DOMAIN/sitemap.xml

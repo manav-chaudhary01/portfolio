@@ -12,14 +12,14 @@ export const ACTIVITY_CONFIG = {
   },
   leetcode: {
     // Configurable LeetCode handle. Set via environment variable LEETCODE_USERNAME
-    // or configure directly below. Default left empty to prevent fabricating statistics.
-    username: '',
-    profileUrl: 'https://leetcode.com',
+    // or configure directly below.
+    username: 'manav_chaudhary01',
+    profileUrl: 'https://leetcode.com/u/manav_chaudhary01/',
     graphqlEndpoint: 'https://leetcode.com/graphql',
     cacheTtlMinutes: 15,
   },
   linkedin: {
-    profileUrl: 'https://linkedin.com/in/manav-chaudhary',
+    profileUrl: 'https://www.linkedin.com/in/manav-chaudhary13/',
     cacheTtlMinutes: 30,
   },
 };

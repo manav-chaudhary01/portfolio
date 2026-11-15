@@ -22,7 +22,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
     id: 'linkedin',
     label: 'LinkedIn',
     sublabel: 'Professional',
-    href: 'https://linkedin.com/in/manav-chaudhary',
+    href: 'https://www.linkedin.com/in/manav-chaudhary13/',
     icon: 'linkedin',
     ariaLabel: 'Connect with Manav on LinkedIn',
     isExternal: true,

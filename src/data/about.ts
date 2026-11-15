@@ -73,7 +73,7 @@ export const ABOUT_DATA: AboutData = {
       title: 'Local-First Client Applications',
       subtitle: 'Zero-Cloud Offline Persistence',
       description:
-        'Building client-side applications that store structured relational data directly in browser IndexedDB, guaranteeing sub-millisecond response times and complete privacy.',
+        'Building client-side applications that store structured relational data directly in browser IndexedDB, guaranteeing responsive client-side persistence and complete privacy.',
       accentColor: '#10B981',
       keyAspects: [
         'IndexedDB multi-store persistence (idb v8)',
@@ -185,7 +185,7 @@ export const ABOUT_DATA: AboutData = {
     },
     {
       title: 'Local-First & Fast',
-      description: 'Respect user time and data privacy by prioritizing local persistence and sub-millisecond responsiveness.',
+      description: 'Respect user time and data privacy by prioritizing local persistence and instantaneous responsiveness without network lag.',
     },
     {
       title: 'Tactile Polish',

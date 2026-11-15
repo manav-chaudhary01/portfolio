@@ -13,6 +13,20 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     return;
   }
 
+  // Reject unsupported HTTP methods with 405 Method Not Allowed
+  if (req.method !== 'GET') {
+    res.statusCode = 405;
+    res.setHeader('Allow', 'GET, OPTIONS');
+    res.setHeader('Content-Type', 'application/json');
+    res.end(
+      JSON.stringify({
+        error: 'Method Not Allowed',
+        message: `HTTP method ${req.method || 'UNKNOWN'} is not supported for this endpoint.`,
+      })
+    );
+    return;
+  }
+
   try {
     const payload = await getActivityPayload(process.env);
     res.statusCode = 200;

@@ -36,7 +36,7 @@ export const LatestLinkedInPost: React.FC<LatestLinkedInPostProps> = ({ response
         </div>
 
         <a
-          href="https://linkedin.com/in/manav-chaudhary"
+          href="https://www.linkedin.com/in/manav-chaudhary13/"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-pill bg-ink-primary text-surface text-xs font-medium hover:bg-ink-primary/90 transition-all shadow-xs shrink-0"
@@ -48,7 +48,8 @@ export const LatestLinkedInPost: React.FC<LatestLinkedInPostProps> = ({ response
     );
   }
 
-  const formatPublishDate = (isoString: string) => {
+  const formatPublishDate = (isoString?: string) => {
+    if (!isoString) return '';
     try {
       return new Date(isoString).toLocaleDateString(undefined, {
         year: 'numeric',
@@ -72,9 +73,11 @@ export const LatestLinkedInPost: React.FC<LatestLinkedInPostProps> = ({ response
             <span className="font-editorial text-lg text-ink-primary leading-tight block">
               Latest LinkedIn Dispatch
             </span>
-            <span className="text-[10px] font-mono text-ink-muted block">
-              {formatPublishDate(data.publishedAt)}
-            </span>
+            {data.publishedAt && (
+              <span className="text-[10px] font-mono text-ink-muted block">
+                {formatPublishDate(data.publishedAt)}
+              </span>
+            )}
           </div>
         </div>
 

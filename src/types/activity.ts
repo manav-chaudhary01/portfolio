@@ -75,7 +75,7 @@ export interface LeetCodeActivityData {
 export interface LinkedInPostData {
   postUrl: string;
   text: string;
-  publishedAt: string;
+  publishedAt?: string;
   imageUrl?: string;
   profileUrl: string;
   isManualFallback: boolean;

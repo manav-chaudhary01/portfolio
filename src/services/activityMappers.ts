@@ -213,7 +213,7 @@ export function mapLinkedInResponse(rawApiResponse: any): LinkedInPostData | nul
     return {
       postUrl: post.postUrl || ACTIVITY_CONFIG.linkedin.profileUrl,
       text: post.commentary || post.text || '',
-      publishedAt: post.publishedAt || new Date().toISOString(),
+      publishedAt: post.publishedAt || undefined,
       imageUrl: post.media?.[0]?.url,
       profileUrl: ACTIVITY_CONFIG.linkedin.profileUrl,
       isManualFallback: false,

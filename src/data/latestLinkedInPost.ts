@@ -35,7 +35,7 @@ export function getManualLinkedInPost(): LinkedInPostData | null {
   return {
     postUrl: MANUAL_LINKEDIN_POST.postUrl,
     text: MANUAL_LINKEDIN_POST.text,
-    publishedAt: MANUAL_LINKEDIN_POST.publishedAt || new Date().toISOString(),
+    publishedAt: MANUAL_LINKEDIN_POST.publishedAt || undefined,
     imageUrl: MANUAL_LINKEDIN_POST.imageUrl,
     profileUrl: ACTIVITY_CONFIG.linkedin.profileUrl,
     isManualFallback: true,

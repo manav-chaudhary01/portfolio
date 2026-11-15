@@ -1,42 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SEO Sitemap
+  Domain Configuration: NOT_SET (Set SITE_URL in deployment environment to populate your production domain)
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/</loc>
+    <loc>https://YOUR_PRODUCTION_DOMAIN/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>/work/meter-flow</loc>
+    <loc>https://YOUR_PRODUCTION_DOMAIN/work/meter-flow</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/work/attendance-tracker</loc>
+    <loc>https://YOUR_PRODUCTION_DOMAIN/work/attendance-tracker</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/work/leetcode-widget</loc>
+    <loc>https://YOUR_PRODUCTION_DOMAIN/work/leetcode-widget</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/about</loc>
+    <loc>https://YOUR_PRODUCTION_DOMAIN/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/playground</loc>
+    <loc>https://YOUR_PRODUCTION_DOMAIN/playground</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>/contact</loc>
+    <loc>https://YOUR_PRODUCTION_DOMAIN/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>/activity</loc>
+    <loc>https://YOUR_PRODUCTION_DOMAIN/activity</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>

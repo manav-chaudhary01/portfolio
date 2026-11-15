@@ -328,11 +328,11 @@ export function forecastSpend({ actualSpend, startDate, endDate, asOfDate = new 
     summary:
       'A client-first web application enabling students to record class attendance, track semester minimum thresholds, and model required attendance streaks without cloud dependencies.',
     description:
-      'Designed around user privacy and frictionless speed, Attendance Tracker eliminates cloud lag, logins, and third-party data tracking. By persisting relational lecture logs and subject metadata inside browser IndexedDB through the idb library, it guarantees offline reliability, zero server costs, and instant sub-millisecond interaction times.',
+      'Designed around user privacy and frictionless speed, Attendance Tracker eliminates cloud lag, logins, and third-party data tracking. By persisting relational lecture logs and subject metadata inside browser IndexedDB through the idb library, it guarantees offline reliability, zero server costs, and instant client-side interaction times.',
     highlights: [
       'Local-first persistence using browser IndexedDB with zero mandatory cloud accounts or remote servers.',
       'Dynamic threshold calculations showing how many consecutive classes must be attended to stay safe.',
-      'Sub-millisecond UI response times with optimistic local updates and reactive UI sync.',
+      'Responsive UI response times with optimistic local updates and reactive UI sync.',
       'Comprehensive backup system supporting JSON export and schema-validated restore.',
       'Responsive touch-optimized interface built with Tailwind CSS and accessible keyboard focus states.',
     ],
@@ -584,7 +584,7 @@ export function calculateClassesToRecover(
         learnings: [
           'Local-first applications require as much rigor in data modeling and migrations as cloud applications.',
           'Mathematical formulas must be protected against edge-case division-by-zero and floating-point boundary rounding.',
-          'Eliminating backend servers enables instant sub-millisecond interaction speeds and 100% uptime.',
+          'Eliminating backend servers enables instantaneous local IndexedDB persistence and 100% uptime.',
         ],
         tradeoffs: [
           'Without cloud sync, data is tied to the device browser; mitigated by providing complete JSON export/import.',

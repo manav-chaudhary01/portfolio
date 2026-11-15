@@ -14,6 +14,8 @@ import {
   clearActivityCache,
 } from '../server/activityService.js';
 
+import handler from '../api/activity.ts';
+
 test('1. mapGitHubContributionLevel maps quartile strings to numbers', () => {
   assert.equal(mapGitHubContributionLevel('NONE'), 0);
   assert.equal(mapGitHubContributionLevel('FIRST_QUARTILE'), 1);
@@ -207,8 +209,8 @@ test('6. mapLeetCodeResponse maps profile, calendar, breakdown and submissions a
   assert.equal(result.recentAccepted[0].url, 'https://leetcode.com/problems/two-sum/');
 });
 
-test('7. mapLinkedInResponse returns API data or manual fallback', () => {
-  const mockApi = {
+test('7. mapLinkedInResponse returns API data or manual fallback with optional publishedAt', () => {
+  const mockApiWithDate = {
     elements: [
       {
         postUrl: 'https://linkedin.com/feed/update/urn:li:activity:123',
@@ -219,12 +221,26 @@ test('7. mapLinkedInResponse returns API data or manual fallback', () => {
     ],
   };
 
-  const fromApi = mapLinkedInResponse(mockApi);
+  const fromApi = mapLinkedInResponse(mockApiWithDate);
   assert.ok(fromApi);
   assert.equal(fromApi.postUrl, 'https://linkedin.com/feed/update/urn:li:activity:123');
   assert.equal(fromApi.text, 'Shipped a new feature!');
+  assert.equal(fromApi.publishedAt, '2026-03-01T10:00:00Z');
   assert.equal(fromApi.imageUrl, 'https://media.licdn.com/dms/image/test.jpg');
   assert.equal(fromApi.isManualFallback, false);
+
+  // Crucial hardening test: when publishedAt is omitted, it must be undefined, NEVER new Date()
+  const mockApiNoDate = {
+    elements: [
+      {
+        postUrl: 'https://linkedin.com/feed/update/urn:li:activity:456',
+        commentary: 'Undated post',
+      },
+    ],
+  };
+  const fromApiNoDate = mapLinkedInResponse(mockApiNoDate);
+  assert.ok(fromApiNoDate);
+  assert.equal(fromApiNoDate.publishedAt, undefined, 'publishedAt must be undefined when missing from upstream');
 
   const fallback = mapLinkedInResponse(null);
   if (fallback) {
@@ -235,8 +251,8 @@ test('7. mapLinkedInResponse returns API data or manual fallback', () => {
 test('8. getActivityPayload handles unconfigured environments without crashing', async () => {
   clearActivityCache();
 
-  // Test with completely empty environment
-  const payload = await getActivityPayload({});
+  // Test with explicit unconfigured environment
+  const payload = await getActivityPayload({ LEETCODE_USERNAME: '' });
 
   assert.ok(payload);
   assert.ok(payload.github);
@@ -246,7 +262,7 @@ test('8. getActivityPayload handles unconfigured environments without crashing',
   // GitHub without token should still gracefully fetch or report not-configured / fallback
   assert.ok(['success', 'not-configured', 'unavailable'].includes(payload.github.status));
 
-  // LeetCode without username should report not-configured
+  // LeetCode with empty username should report not-configured
   assert.equal(payload.leetcode.status, 'not-configured');
   assert.equal(payload.leetcode.data, null);
 
@@ -259,9 +275,9 @@ test('9. In-memory cache coalesces concurrent requests and stores results', asyn
 
   // Trigger 3 concurrent requests simultaneously
   const [p1, p2, p3] = await Promise.all([
-    getActivityPayload({}),
-    getActivityPayload({}),
-    getActivityPayload({}),
+    getActivityPayload({ LEETCODE_USERNAME: '' }),
+    getActivityPayload({ LEETCODE_USERNAME: '' }),
+    getActivityPayload({ LEETCODE_USERNAME: '' }),
   ]);
 
   // All 3 should receive identical results from coalesced in-flight / cache
@@ -285,4 +301,98 @@ test('10. Independent failure isolation preserves healthy providers', async () =
   assert.ok(payload.github);
   assert.ok(payload.linkedin);
   assert.notEqual(payload.github.status, 'crashed');
+});
+
+test('11. Activity API explicitly rejects unsupported HTTP methods with 405', async () => {
+  const methods = ['POST', 'PUT', 'DELETE', 'PATCH'];
+
+  for (const method of methods) {
+    let statusCode = 0;
+    const headers = {};
+    let responseBody = '';
+
+    const req = {
+      method,
+      url: '/api/activity',
+    };
+
+    const res = {
+      set statusCode(code) {
+        statusCode = code;
+      },
+      get statusCode() {
+        return statusCode;
+      },
+      setHeader(name, val) {
+        headers[name.toLowerCase()] = val;
+      },
+      end(data) {
+        responseBody = data;
+      },
+    };
+
+    await handler(req, res);
+
+    assert.equal(statusCode, 405, `Expected 405 for ${method}, got ${statusCode}`);
+    assert.equal(headers['allow'], 'GET, OPTIONS');
+    const json = JSON.parse(responseBody);
+    assert.equal(json.error, 'Method Not Allowed');
+  }
+});
+
+test('12. Live LeetCode telemetry mapping for manav_chaudhary01', () => {
+  // Mock exact verified response from LeetCode public GraphQL for manav_chaudhary01
+  const liveLeetCodePayload = {
+    data: {
+      matchedUser: {
+        username: 'manav_chaudhary01',
+        userCalendar: {
+          streak: 53,
+          totalActiveDays: 57,
+          activeYears: [2026],
+          submissionCalendar: JSON.stringify({
+            '1794528000': 5,
+            '1794614400': 2,
+          }),
+        },
+        submitStatsGlobal: {
+          acSubmissionNum: [
+            { difficulty: 'All', count: 71 },
+            { difficulty: 'Easy', count: 44 },
+            { difficulty: 'Medium', count: 25 },
+            { difficulty: 'Hard', count: 2 },
+          ],
+        },
+      },
+      recentAcSubmissionList: [
+        {
+          id: '2195768177',
+          title: 'Sum of Absolute Differences in a Sorted Array',
+          titleSlug: 'sum-of-absolute-differences-in-a-sorted-array',
+          timestamp: '1794640298',
+        },
+        {
+          id: '2195006689',
+          title: 'Maximum Ice Cream Bars',
+          titleSlug: 'maximum-ice-cream-bars',
+          timestamp: '1794539927',
+        },
+      ],
+    },
+  };
+
+  const mapped = mapLeetCodeResponse(liveLeetCodePayload, 'manav_chaudhary01');
+  assert.ok(mapped);
+  assert.equal(mapped.username, 'manav_chaudhary01');
+  assert.equal(mapped.totalSolved, 71);
+  assert.equal(mapped.easySolved, 44);
+  assert.equal(mapped.mediumSolved, 25);
+  assert.equal(mapped.hardSolved, 2);
+  assert.equal(mapped.easySolved + mapped.mediumSolved + mapped.hardSolved, mapped.totalSolved);
+  assert.equal(mapped.streak, 53);
+  assert.equal(mapped.totalActiveDays, 57);
+  assert.equal(mapped.recentAccepted.length, 2);
+  assert.equal(mapped.recentAccepted[0].title, 'Sum of Absolute Differences in a Sorted Array');
+  assert.equal(mapped.recentAccepted[0].url, 'https://leetcode.com/problems/sum-of-absolute-differences-in-a-sorted-array/');
+  assert.equal(mapped.profileUrl, 'https://leetcode.com/u/manav_chaudhary01/');
 });

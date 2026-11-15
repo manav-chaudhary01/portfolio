@@ -108,7 +108,7 @@ export const ContactPage: React.FC = () => {
 
         {/* LinkedIn */}
         <a
-          href="https://linkedin.com/in/manav-chaudhary"
+          href="https://www.linkedin.com/in/manav-chaudhary13/"
           target="_blank"
           rel="noopener noreferrer"
           className="p-5 rounded-2xl bg-surface border border-border-card shadow-xs hover:border-border-subtle hover:shadow-sm transition-all duration-200 group flex flex-col justify-between"
@@ -128,7 +128,7 @@ export const ContactPage: React.FC = () => {
                 LinkedIn
               </span>
               <span className="text-xs text-ink-muted font-mono block">
-                /in/manav-chaudhary
+                /in/manav-chaudhary13
               </span>
             </div>
           </div>

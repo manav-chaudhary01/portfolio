@@ -17,7 +17,7 @@ Inspired by the tactile interaction design of [Pixelwrld](https://pixelwrld.co/)
 
 2. **Editorial Case Studies (`/work/:slug`)**:
    - `/work/meter-flow`: Multi-tenant SaaS metered billing platform with Decimal.js arbitrary-precision math, idempotent ingestion, and linear burn-rate spend alerts.
-   - `/work/attendance-tracker`: Local-first offline student attendance analytics powered by browser IndexedDB (via `idb v8`), closed-form threshold formulas, and sub-millisecond local updates.
+   - `/work/attendance-tracker`: Local-first offline student attendance analytics powered by browser IndexedDB (via `idb v8`), closed-form threshold formulas, and responsive local-first client updates.
    - `/work/leetcode-widget`: Native Windows wallpaper widget integrating directly with Win32 User32 `WorkerW` hooks, automatic Explorer crash recovery, and offline local cache.
 
 3. **About (`/about`)**:
@@ -97,11 +97,12 @@ cp .env.example .env
 
 | Variable | Required | Description |
 | :--- | :--- | :--- |
+| `SITE_URL` | Optional | Production canonical domain (e.g., `https://manavchaudhary.com`). Used during build by `scripts/generate-seo.js` to generate absolute canonical URLs in `sitemap.xml` and `robots.txt`. If unset, an explicit placeholder is generated. |
 | `GITHUB_TOKEN` | Optional | Read-only GitHub Personal Access Token (classic: `read:user` or fine-grained: Public Repositories). Enables 52-week contribution calendar via GraphQL (`api.github.com/graphql`). If omitted, REST public events are used as fallback. |
 | `GITHUB_USERNAME` | Default: `manav-chaudhary01` | GitHub username to query. |
-| `LEETCODE_USERNAME` | Optional | Public LeetCode username for profile, submission calendar, and solved counts (`leetcode.com/graphql`). If unset or unverified, UI renders a clean "Setup Required" state. |
+| `LEETCODE_USERNAME` | Default: `manav_chaudhary01` | Public LeetCode username for profile, submission calendar, and solved counts (`leetcode.com/graphql`). Verified live for `manav_chaudhary01`. |
 | `LINKEDIN_ACCESS_TOKEN` | Optional | Access token with `r_member_social` partner permissions for official Posts API. |
-| `LINKEDIN_MEMBER_ID` | Optional | LinkedIn member identifier. If omitted, the service falls back to `src/data/latestLinkedInPost.ts`. |
+| `LINKEDIN_MEMBER_ID` | Optional | LinkedIn member identifier. If omitted, the service falls back to `src/data/latestLinkedInPost.ts` or profile link (`https://www.linkedin.com/in/manav-chaudhary13/`). |
 
 > **Security Guarantee**: Environment variables are never prefixed with `VITE_` and are never exposed in frontend bundles.
 
@@ -112,7 +113,9 @@ cp .env.example .env
 ### Vercel / Serverless
 The repository includes `api/activity.ts` and `vercel.json` configured for zero-configuration deployment:
 - Client SPA routing: All non-API routes rewrite to `/index.html`.
-- API endpoint: `/api/activity` dispatches to the serverless activity aggregation function with HTTP caching (`Cache-Control: public, s-maxage=900, stale-while-revalidate=1800`).
+- API endpoint: `/api/activity` dispatches to the serverless activity aggregation function with HTTP caching (`Cache-Control: public, s-maxage=900, stale-while-revalidate=1800`) and 405 Method Not Allowed validation.
+- Build command: `npm run build` (executes SEO sitemap generation, TypeScript typecheck, and Vite bundle compilation).
+- Production domain: Set `SITE_URL` in your hosting dashboard (e.g. Vercel Project Settings > Environment Variables) so `sitemap.xml` and `robots.txt` render your live production domain.
 
 ---
 

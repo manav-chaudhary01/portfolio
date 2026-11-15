@@ -22,11 +22,23 @@ const TTL_MS = {
   linkedin: ACTIVITY_CONFIG.linkedin.cacheTtlMinutes * 60 * 1000,
 };
 
+// Upstream request timeout (8 seconds)
+const UPSTREAM_TIMEOUT_MS = 8000;
+
+function createFetchSignal(timeoutMs = UPSTREAM_TIMEOUT_MS) {
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+    return AbortSignal.timeout(timeoutMs);
+  }
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), timeoutMs);
+  return controller.signal;
+}
+
 /**
  * Fetch GitHub Activity (GraphQL Calendar + REST Public Events)
  */
 async function fetchGitHubInternal(env = process.env) {
-  const username = env.GITHUB_USERNAME || ACTIVITY_CONFIG.github.username;
+  const username = env.GITHUB_USERNAME !== undefined ? env.GITHUB_USERNAME : ACTIVITY_CONFIG.github.username;
   const token = env.GITHUB_TOKEN;
   const now = new Date().toISOString();
 
@@ -35,6 +47,7 @@ async function fetchGitHubInternal(env = process.env) {
     try {
       const restRes = await fetch(`https://api.github.com/users/${username}/events/public?per_page=5`, {
         headers: { 'User-Agent': 'Portfolio-Elsewhere-Service' },
+        signal: createFetchSignal(),
       });
       const restEvents = restRes.ok ? await restRes.json() : [];
 
@@ -94,12 +107,14 @@ async function fetchGitHubInternal(env = process.env) {
           'User-Agent': 'Portfolio-Elsewhere-Service',
         },
         body: JSON.stringify({ query, variables: { username } }),
+        signal: createFetchSignal(),
       }),
       fetch(`https://api.github.com/users/${username}/events/public?per_page=5`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'User-Agent': 'Portfolio-Elsewhere-Service',
         },
+        signal: createFetchSignal(),
       }),
     ]);
 
@@ -147,7 +162,7 @@ async function fetchGitHubInternal(env = process.env) {
  * Fetch LeetCode Activity (Public GraphQL Profile & Submissions)
  */
 async function fetchLeetCodeInternal(env = process.env) {
-  const username = env.LEETCODE_USERNAME || ACTIVITY_CONFIG.leetcode.username;
+  const username = env.LEETCODE_USERNAME !== undefined ? env.LEETCODE_USERNAME : ACTIVITY_CONFIG.leetcode.username;
   const now = new Date().toISOString();
 
   if (!username) {
@@ -195,6 +210,7 @@ async function fetchLeetCodeInternal(env = process.env) {
         Referer: 'https://leetcode.com',
       },
       body: JSON.stringify({ query, variables: { username } }),
+      signal: createFetchSignal(),
     });
 
     if (res.status === 429) {
@@ -274,6 +290,7 @@ async function fetchLinkedInInternal(env = process.env) {
         Authorization: `Bearer ${token}`,
         'X-Restli-Protocol-Version': '2.0.0',
       },
+      signal: createFetchSignal(),
     });
 
     if (!res.ok) {
