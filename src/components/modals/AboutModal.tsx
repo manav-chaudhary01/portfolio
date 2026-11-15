@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { ABOUT_DATA } from '../../data/about';
-import { X, Sparkles } from 'lucide-react';
+import { X, Sparkles, ArrowUpRight } from 'lucide-react';
 import { backdropVariants, previewCardVariants } from '../../animations/presets';
 import { useDialogFocus } from '../../hooks/useDialogFocus';
 
@@ -126,6 +127,19 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose, trigger
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Link to Full About Page */}
+            <div className="mt-8 pt-5 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-3">
+              <span className="text-xs text-ink-muted">Want the complete story, toolkit & focus areas?</span>
+              <Link
+                to="/about"
+                onClick={onClose}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-pill bg-ink-primary text-surface text-xs font-medium hover:bg-ink-primary/90 transition-all shadow-xs"
+              >
+                <span>Read Full Story</span>
+                <ArrowUpRight size={13} />
+              </Link>
             </div>
           </motion.div>
         </div>

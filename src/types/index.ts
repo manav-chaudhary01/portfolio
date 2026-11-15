@@ -129,3 +129,27 @@ export interface PlaygroundItem {
   tag: string;
   componentName: string;
 }
+
+export type ExperimentStatus = 'live' | 'in-progress' | 'concept';
+export type CardLayoutSpan = 'normal' | 'wide' | 'tall';
+
+export interface PlaygroundExperiment {
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  status: ExperimentStatus;
+  date: string;
+  badge: string;
+  layoutSpan?: CardLayoutSpan;
+  accentColor: string;
+  route?: string;
+  externalUrl?: string;
+  interactiveType?: 'spring-physics' | 'magnetic-dots' | 'audio-clicks' | 'recovery-curve' | 'shell-hierarchy';
+}
+
+export interface PersonalDetailItem {
+  label: string;
+  value: string;
+  note?: string;
+}

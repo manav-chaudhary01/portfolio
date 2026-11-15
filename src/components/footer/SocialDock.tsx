@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { SOCIAL_LINKS } from '../../data/socialLinks';
 import { X, Mail, FileText, ArrowUpRight } from 'lucide-react';
@@ -123,8 +124,20 @@ export const SocialDock: React.FC<SocialDockProps> = ({ isOpen, onToggle, onClos
               ))}
             </div>
 
+            {/* Dedicated Contact Page shortcut */}
+            <div className="w-full pt-2 pb-1 flex justify-center border-t border-border-subtle/60">
+              <Link
+                to="/contact"
+                onClick={onClose}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-secondary hover:text-ink-primary transition-colors hover:underline"
+              >
+                <span>Open Dedicated Contact Page</span>
+                <ArrowUpRight size={13} />
+              </Link>
+            </div>
+
             {/* Copyright & Location stamp */}
-            <div className="text-[11px] text-ink-muted mt-3 pt-3 border-t border-border-subtle/60 w-full text-center">
+            <div className="text-[11px] text-ink-muted mt-2 pt-2 border-t border-border-subtle/40 w-full text-center">
               All Rights Reserved • Manav Chaudhary • {new Date().getFullYear()}
             </div>
           </motion.div>
