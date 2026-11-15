@@ -2,8 +2,14 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Grid, User } from 'lucide-react';
 import { ElsewhereSection } from '../components/activity/ElsewhereSection';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const ActivityPage: React.FC = () => {
+  useDocumentTitle(
+    'Live Activity & Telemetry — Manav Chaudhary',
+    'Live GitHub public activity heatmap, verified commits, LeetCode submissions, and professional dispatch notes.'
+  );
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);

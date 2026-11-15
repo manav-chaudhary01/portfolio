@@ -1,17 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 
 export const AudioClicksWidget: React.FC = () => {
   const [lastPlayed, setLastPlayed] = useState<string | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
+  // Clean up Web Audio context on unmount
+  useEffect(() => {
+    return () => {
+      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+        audioCtxRef.current.close().catch(() => {});
+      }
+    };
+  }, []);
 
   const playClick = (type: 'blue' | 'brown' | 'thock') => {
     if (!audioEnabled) return;
 
     try {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (!AudioCtx) return;
-      const ctx = new AudioCtx();
+
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = new AudioCtx();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
 
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();

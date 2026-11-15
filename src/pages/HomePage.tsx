@@ -9,6 +9,7 @@ import { PlaygroundModal } from '../components/modals/PlaygroundModal';
 import { ProjectPreviewModal } from '../components/previews/ProjectPreviewModal';
 import { ElsewhereSection } from '../components/activity/ElsewhereSection';
 import { useProjectQuerySync } from '../hooks/useProjectQuerySync';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { ABOUT_DATA } from '../data/about';
 import { NavNodeId, ProjectSlug } from '../types';
 
@@ -18,6 +19,11 @@ import { NavNodeId, ProjectSlug } from '../types';
  * soft blur focus transitions, expandable bottom dock, and URL-synchronized previews.
  */
 export const HomePage: React.FC = () => {
+  useDocumentTitle(
+    'Manav Chaudhary — Software Engineer & Systems Builder',
+    'Personal portfolio of Manav Chaudhary — tactile navigation, editorial case studies, and live developer telemetry.'
+  );
+
   const { activeProject, openPreview, closePreview, isOpen: isProjectPreviewOpen } =
     useProjectQuerySync();
 

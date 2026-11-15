@@ -5,8 +5,14 @@ import { ArrowLeft, ArrowRight, Grid, User, Sparkles } from 'lucide-react';
 import { PLAYGROUND_EXPERIMENTS } from '../data/playground';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { ExperimentCard } from '../components/playground/ExperimentCard';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const PlaygroundPage: React.FC = () => {
+  useDocumentTitle(
+    'Playground — Interactive Labs & Experiments',
+    'Interactive software experiments exploring spring physics, procedural web audio, and magnetic UI fields.'
+  );
+
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {

@@ -9,8 +9,14 @@ import { AboutStory } from '../components/about/AboutStory';
 import { FocusAreas } from '../components/about/FocusAreas';
 import { TechStackSection } from '../components/about/TechStackSection';
 import { PersonalDetailsSection } from '../components/about/PersonalDetailsSection';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const AboutPage: React.FC = () => {
+  useDocumentTitle(
+    'About — Manav Chaudhary',
+    'Background, problem spaces, technical focus areas, and engineering principles of Manav Chaudhary.'
+  );
+
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {

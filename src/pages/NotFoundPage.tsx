@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const NotFoundPage: React.FC = () => {
+  useDocumentTitle('404 Page Not Found — Manav Chaudhary', 'The requested page could not be found.');
+
   return (
     <div className="flex-1 flex flex-col items-center justify-center py-20 text-center">
       <span className="font-handwriting text-3xl text-ink-muted mb-2 select-none">

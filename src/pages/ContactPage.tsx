@@ -6,8 +6,14 @@ import { GithubIcon } from '../components/icons/GithubIcon';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { ContactVisual } from '../components/contact/ContactVisual';
 import { CopyEmailButton } from '../components/contact/CopyEmailButton';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const ContactPage: React.FC = () => {
+  useDocumentTitle(
+    'Contact — Manav Chaudhary',
+    'Get in touch with Manav Chaudhary for software engineering opportunities, systems architecture, and technical collaborations.'
+  );
+
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {

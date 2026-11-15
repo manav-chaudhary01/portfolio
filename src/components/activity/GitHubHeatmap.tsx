@@ -85,10 +85,20 @@ export const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({
                         });
                       }}
                       onMouseLeave={() => setHoveredDay(null)}
-                      className={`w-[10px] h-[10px] rounded-[2px] transition-transform hover:scale-125 focus:scale-125 focus:outline-none ${
+                      onFocus={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setHoveredDay({
+                          date: day.date,
+                          count: day.count,
+                          x: rect.left + rect.width / 2,
+                          y: rect.top,
+                        });
+                      }}
+                      onBlur={() => setHoveredDay(null)}
+                      className={`w-[10px] h-[10px] rounded-[2px] transition-transform hover:scale-125 focus:scale-125 focus:outline-none focus:ring-1 focus:ring-ink-primary ${
                         LEVEL_COLORS[day.level]
                       }`}
-                      aria-label={`${day.count} contributions on ${day.date}`}
+                      aria-label={`${day.count} contribution${day.count === 1 ? '' : 's'} on ${day.date}`}
                     />
                   ))}
                 </div>

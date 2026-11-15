@@ -77,6 +77,11 @@ export const CopyEmailButton: React.FC<CopyEmailButtonProps> = ({ email }) => {
           <ExternalLink size={12} />
         </a>
       </div>
+
+      {/* Screen Reader Live Announcement */}
+      <div className="sr-only" role="status" aria-live="polite">
+        {copied ? 'Email address copied to clipboard.' : ''}
+      </div>
     </div>
   );
 };

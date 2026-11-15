@@ -11,6 +11,7 @@ import { FeatureShowcase } from '../components/editorial/FeatureShowcase';
 import { TestingCard } from '../components/editorial/TestingCard';
 import { ReflectionSection } from '../components/editorial/ReflectionSection';
 import { ProjectNavigation } from '../components/editorial/ProjectNavigation';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 /**
  * Dedicated editorial project case study page (/work/:slug).
@@ -26,6 +27,11 @@ export const ProjectDetailPage: React.FC = () => {
   }, [slug]);
 
   const project = slug && slug in PROJECTS ? PROJECTS[slug as ProjectSlug] : null;
+
+  useDocumentTitle(
+    project ? `${project.title} — Case Study` : 'Project Not Found',
+    project ? project.subtitle : undefined
+  );
 
   if (!project || !project.caseStudy) {
     return (
